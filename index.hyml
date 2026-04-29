@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rose Garden 分客轮回 Pro</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #fff8f8;
+    text-align: center;
+    padding: 18px;
+    color: #333;
+  }
+  h1 {
+    color: #b85c7a;
+    font-size: 25px;
+    margin-bottom: 8px;
+  }
+  h2 {
+    color: #b85c7a;
+    font-size: 20px;
+    margin-top: 28px;
+  }
+  .card {
+    background: white;
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+    max-width: 520px;
+    margin: 0 auto 18px auto;
+  }
+  #nextName {
+    font-size: 52px;
+    font-weight: bold;
+    color: #333;
+    margin: 22px 0;
+  }
+  button, input {
+    font-size: 17px;
+    border-radius: 14px;
+  }
+  button {
+    border: none;
+    cursor: pointer;
+  }
+  .bigbtn {
+    width: 100%;
+    padding: 16px;
+    margin-top: 12px;
+  }
+  .main {
+    background: #b85c7a;
+    color: white;
+  }
+  .skip {
+    background: #eee;
+    color: #333;
+  }
+  .undo {
+    background: #fff0b8;
+    color: #5c4500;
+  }
+  .reset {
+    background: #333;
+    color: white;
+  }
+  .boss {
+    background: #f5d7e2;
+    color: #6d2740;
+  }
+  .small {
+    margin-top: 18px;
+    color: #777;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .log {
+    margin-top: 20px;
+    padding: 12px;
+    background: #fafafa;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #555;
+    text-align: left;
+  }
+  .staff-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: space-between;
+    background: #fafafa;
+    padding: 10px;
+    border-radius: 12px;
+    margin-top: 8px;
+  }
+  .staff-name {
+    flex: 1;
+    text-align: left;
+    font-weight: bold;
+  }
+  .mini {
+    padding: 8px 10px;
+    background: #eee;
+    color: #333;
+  }
+  .danger {
+    background: #7a1f1f;
+    color: white;
+  }
+  .add-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-top: 12px;
+  }
+  th, td {
+    border-bottom: 1px solid #eee;
+    padding: 8px 4px;
+    text-align: left;
+  }
+  th {
+    color: #b85c7a;
+  }
+  .week-title {
+    text-align: left;
+    color: #b85c7a;
+    font-weight: bold;
+    margin-top: 18px;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Rose Garden 分客轮回 Pro</h1>
+  <p>下一位员工：</p>
+  <div id="nextName"></div>
+
+  <button class="bigbtn main" onclick="assignNext()">已分给这位，下一位</button>
+  <button class="bigbtn skip" onclick="skipNext()">这位休息/忙，跳过</button>
+  <button class="bigbtn undo" onclick="undoLast()">撤销上一步</button>
+  <button class="bigbtn boss" onclick="bossHelp()">Sunny / Charlotte 补位</button>
+  <button class="bigbtn reset" onclick="resetRotation()">重置为当前顺序第一个</button>
+
+  <div class="small">
+    指定客人不算轮回。Sunny / Charlotte 补位不影响员工轮回。点错了可以撤销上一步。
+  </div>
+
+  <div class="log">
+    <strong>今日记录：</strong>
+    <div id="history"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>编辑员工顺序</h2>
+  <div id="staffList"></div>
+
+  <div class="add-row">
+    <input id="newStaffName" placeholder="输入新员工名字" />
+    <button class="mini main" onclick="addStaff()">添加</button>
+  </div>
+
+  <button class="bigbtn reset" onclick="clearAll()">清空记录并重置</button>
+
+  <div class="small">
+    可以删除离职员工，也可以用 ↑ ↓ 调整顺序。调整后建议点“重置为当前顺序第一个”。
+  </div>
+</div>
+
+<div class="card">
+  <h2>三周公平轮换表</h2>
+  <div class="small">
+    根据当前员工顺序自动生成。3个人时，三周共21天，每人当第一7次。
+  </div>
+  <div id="threeWeekTable"></div>
+</div>
+
+<script>
+  const defaultStaff = ["John", "Annie", "Mia"];
+  const weekdays = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+
+  let staff = JSON.parse(localStorage.getItem("staffList") || "null") || defaultStaff;
+  let index = localStorage.getItem("rotationIndex");
+  index = index === null ? 0 : parseInt(index);
+  if (isNaN(index) || index < 0 || index >= staff.length) index = 0;
+
+  let history = JSON.parse(localStorage.getItem("rotationHistory") || "[]");
+  let undoStack = JSON.parse(localStorage.getItem("undoStack") || "[]");
+
+  function snapshot() {
+    undoStack.push({
+      staff: [...staff],
+      index: index,
+      history: [...history]
+    });
+    if (undoStack.length > 20) undoStack.shift();
+  }
+
+  function save() {
+    localStorage.setItem("staffList", JSON.stringify(staff));
+    localStorage.setItem("rotationIndex", index);
+    localStorage.setItem("rotationHistory", JSON.stringify(history.slice(-20)));
+    localStorage.setItem("undoStack", JSON.stringify(undoStack));
+  }
+
+  function timeNow() {
+    const d = new Date();
+    return d.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function rotateOrder(startIndex) {
+    if (staff.length === 0) return [];
+    let arr = [];
+    for (let i = 0; i < staff.length; i++) {
+      arr.push(staff[(startIndex + i) % staff.length]);
+    }
+    return arr;
+  }
+
+  function showNext() {
+    if (staff.length === 0) {
+      document.getElementById("nextName").textContent = "请添加员工";
+    } else {
+      if (index >= staff.length) index = 0;
+      document.getElementById("nextName").textContent = staff[index];
+    }
+
+    document.getElementById("history").innerHTML =
+      history.length ? history.slice(-12).reverse().join("<br>") : "暂无记录";
+
+    renderStaffList();
+    renderThreeWeekTable();
+    save();
+  }
+
+  function assignNext() {
+    if (staff.length === 0) return alert("请先添加员工");
+    snapshot();
+    const name = staff[index];
+    history.push(timeNow() + " 分给：" + name);
+    index = (index + 1) % staff.length;
+    showNext();
+  }
+
+  function skipNext() {
+    if (staff.length === 0) return alert("请先添加员工");
+    snapshot();
+    const name = staff[index];
+    history.push(timeNow() + " 跳过：" + name);
+    index = (index + 1) % staff.length;
+    showNext();
+  }
+
+  function bossHelp() {
+    snapshot();
+    history.push(timeNow() + " Sunny / Charlotte 补位（不影响轮回）");
+    showNext();
+  }
+
+  function undoLast() {
+    if (undoStack.length === 0) return alert("没有可以撤销的操作");
+    const last = undoStack.pop();
+    staff = last.staff;
+    index = last.index;
+    history = last.history;
+    history.push(timeNow() + " 已撤销上一步");
+    showNext();
+  }
+
+  function resetRotation() {
+    if (staff.length === 0) return alert("请先添加员工");
+    if (confirm("确定重置为当前顺序第一个吗？")) {
+      snapshot();
+      index = 0;
+      history.push(timeNow() + " 已重置为：" + staff[0]);
+      showNext();
+    }
+  }
+
+  function renderStaffList() {
+    const box = document.getElementById("staffList");
+    box.innerHTML = "";
+    staff.forEach((name, i) => {
+      const row = document.createElement("div");
+      row.className = "staff-row";
+      row.innerHTML = `
+        <div class="staff-name">${i + 1}. ${name}</div>
+        <button class="mini" onclick="moveUp(${i})">↑</button>
+        <button class="mini" onclick="moveDown(${i})">↓</button>
+        <button class="mini danger" onclick="removeStaff(${i})">删除</button>
+      `;
+      box.appendChild(row);
+    });
+  }
+
+  function addStaff() {
+    const input = document.getElementById("newStaffName");
+    const name = input.value.trim();
+    if (!name) return alert("请输入员工名字");
+    if (staff.includes(name)) return alert("这个员工已经在名单里");
+    snapshot();
+    staff.push(name);
+    input.value = "";
+    history.push(timeNow() + " 添加员工：" + name);
+    showNext();
+  }
+
+  function removeStaff(i) {
+    const name = staff[i];
+    if (!confirm("确定删除 " + name + " 吗？")) return;
+    snapshot();
+    staff.splice(i, 1);
+    if (index >= staff.length) index = 0;
+    history.push(timeNow() + " 删除员工：" + name);
+    showNext();
+  }
+
+  function moveUp(i) {
+    if (i === 0) return;
+    snapshot();
+    [staff[i - 1], staff[i]] = [staff[i], staff[i - 1]];
+    if (index === i) index = i - 1;
+    else if (index === i - 1) index = i;
+    history.push(timeNow() + " 调整顺序：上移 " + staff[i - 1]);
+    showNext();
+  }
+
+  function moveDown(i) {
+    if (i === staff.length - 1) return;
+    snapshot();
+    [staff[i], staff[i + 1]] = [staff[i + 1], staff[i]];
+    if (index === i) index = i + 1;
+    else if (index === i + 1) index = i;
+    history.push(timeNow() + " 调整顺序：下移 " + staff[i + 1]);
+    showNext();
+  }
+
+  function clearAll() {
+    if (!confirm("确定清空记录并恢复 John / Annie / Mia 吗？")) return;
+    snapshot();
+    staff = [...defaultStaff];
+    index = 0;
+    history = [timeNow() + " 已清空并恢复默认员工"];
+    showNext();
+  }
+
+  function renderThreeWeekTable() {
+    const box = document.getElementById("threeWeekTable");
+    if (staff.length === 0) {
+      box.innerHTML = "请先添加员工";
+      return;
+    }
+
+    let html = "";
+    let dayNumber = 0;
+
+    for (let week = 1; week <= 3; week++) {
+      html += `<div class="week-title">第${week}周</div>`;
+      html += "<table><tr><th>星期</th><th>轮回顺序</th></tr>";
+
+      for (let d = 0; d < 7; d++) {
+        const start = dayNumber % staff.length;
+        html += `<tr><td>${weekdays[d]}</td><td>${rotateOrder(start).join(" → ")}</td></tr>`;
+        dayNumber++;
+      }
+
+      html += "</table>";
+    }
+
+    box.innerHTML = html;
+  }
+
+  showNext();
+</script>
+
+</body>
+</html>
