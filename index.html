@@ -3,387 +3,302 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Rose Garden 分客轮回 Pro</title>
+<title>Rose Garden 正式排班系统</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #fff8f8;
-    text-align: center;
-    padding: 18px;
-    color: #333;
-  }
-  h1 {
-    color: #b85c7a;
-    font-size: 25px;
-    margin-bottom: 8px;
-  }
-  h2 {
-    color: #b85c7a;
-    font-size: 20px;
-    margin-top: 28px;
-  }
-  .card {
-    background: white;
-    border-radius: 22px;
-    padding: 24px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.12);
-    max-width: 520px;
-    margin: 0 auto 18px auto;
-  }
-  #nextName {
-    font-size: 52px;
-    font-weight: bold;
-    color: #333;
-    margin: 22px 0;
-  }
-  button, input {
-    font-size: 17px;
-    border-radius: 14px;
-  }
-  button {
-    border: none;
-    cursor: pointer;
-  }
-  .bigbtn {
-    width: 100%;
-    padding: 16px;
-    margin-top: 12px;
-  }
-  .main {
-    background: #b85c7a;
-    color: white;
-  }
-  .skip {
-    background: #eee;
-    color: #333;
-  }
-  .undo {
-    background: #fff0b8;
-    color: #5c4500;
-  }
-  .reset {
-    background: #333;
-    color: white;
-  }
-  .boss {
-    background: #f5d7e2;
-    color: #6d2740;
-  }
-  .small {
-    margin-top: 18px;
-    color: #777;
-    font-size: 14px;
-    line-height: 1.6;
-  }
-  .log {
-    margin-top: 20px;
-    padding: 12px;
-    background: #fafafa;
-    border-radius: 12px;
-    font-size: 14px;
-    color: #555;
-    text-align: left;
-  }
-  .staff-row {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    justify-content: space-between;
-    background: #fafafa;
-    padding: 10px;
-    border-radius: 12px;
-    margin-top: 8px;
-  }
-  .staff-name {
-    flex: 1;
-    text-align: left;
-    font-weight: bold;
-  }
-  .mini {
-    padding: 8px 10px;
-    background: #eee;
-    color: #333;
-  }
-  .danger {
-    background: #7a1f1f;
-    color: white;
-  }
-  .add-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  input {
-    flex: 1;
-    padding: 12px;
-    border: 1px solid #ddd;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-    margin-top: 12px;
-  }
-  th, td {
-    border-bottom: 1px solid #eee;
-    padding: 8px 4px;
-    text-align: left;
-  }
-  th {
-    color: #b85c7a;
-  }
-  .week-title {
-    text-align: left;
-    color: #b85c7a;
-    font-weight: bold;
-    margin-top: 18px;
-  }
+:root{
+  --rose:#b95b7c; --rose-dark:#8e3d5c; --bg:#fff7f9; --text:#2f2f2f;
+  --muted:#777; --line:#efd6df; --yellow:#fff1b8; --danger:#ffd9d9; --green:#f0fff3;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:14px;background:linear-gradient(180deg,#fff7f9,#fff);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--text)}
+.app{max-width:1180px;margin:0 auto;min-height:calc(100vh - 28px);background:#fff;border-radius:30px;box-shadow:0 14px 40px rgba(90,30,50,.13);overflow:hidden;position:relative}
+header{padding:18px 20px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.96);position:sticky;top:0;z-index:10}
+.brand{font-size:20px;line-height:1.15;font-weight:850;color:var(--rose)}
+.menuBtn{width:48px;height:48px;border:0;border-radius:15px;background:#fff1f5;color:var(--rose-dark);font-size:25px}
+.drawer{position:fixed;top:78px;right:22px;width:270px;background:#fff;border-radius:20px;box-shadow:0 12px 35px rgba(0,0,0,.18);padding:10px;display:none;z-index:30}
+.drawer button{width:100%;border:0;background:#fff;text-align:left;padding:14px 12px;border-radius:13px;font-size:16px}.drawer button:hover{background:#fff3f6}
+.layout{display:grid;grid-template-columns:1fr;gap:18px;padding:18px}
+.panel{border:1px solid #f0e2e7;border-radius:24px;padding:18px;background:#fff}
+h1{margin:4px 0 8px;font-size:25px;color:var(--rose);text-align:center}h2{font-size:18px;margin:18px 0 10px}
+.hint{color:var(--muted);text-align:center;line-height:1.55;margin-top:0}.toprow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:14px}.dow,.day{text-align:center;padding:10px 0;border-radius:12px;font-size:14px}
+.dow{color:#999;font-weight:700}.day{background:#fff6f8;border:1px solid var(--line);cursor:pointer}.day.selected{background:var(--rose);color:white;border-color:var(--rose);font-weight:800}.day.today{outline:2px solid #e4a5ba}
+button{cursor:pointer}.btn{width:100%;border:0;border-radius:18px;padding:16px 14px;font-size:17px;margin:8px 0;font-weight:750}
+.primary{background:var(--rose);color:white}.gray{background:#eee;color:#333}.yellow{background:var(--yellow);color:#5b4a12}.danger{background:var(--danger);color:#783030}.pink{background:#f5d4df;color:#7c2848}.green{background:var(--green);color:#276532}
+.mini{border:0;background:#fff1f5;color:#8f3d5e;border-radius:11px;padding:8px 10px;font-size:14px;margin:2px}
+.page{display:none}.page.active{display:block}.mobileCalendar{display:block}
+.datebar{background:#fff6f8;border:1px solid var(--line);border-radius:18px;padding:13px;text-align:center;color:#763b52;font-weight:850;margin:12px 0}
+.summary{background:#fff6f8;border:1px solid var(--line);border-radius:18px;padding:13px;margin:12px 0;text-align:center;color:#763b52;font-weight:750;line-height:1.5}
+.bigName{text-align:center;font-size:58px;font-weight:950;margin:18px 0;color:#303030}
+.orderBox{background:#fafafa;border-radius:18px;padding:14px;margin:12px 0;line-height:1.8}
+.staffRow,.dayCard{background:#fff7f9;border:1px solid var(--line);border-radius:16px;padding:12px;margin:8px 0}
+.staffRow{display:flex;align-items:center;justify-content:space-between;gap:10px}.staffRow b{font-size:17px}
+input{width:100%;border:1px solid var(--line);border-radius:14px;padding:14px;font-size:16px;background:#fff}
+.weekCard{border:1px solid var(--line);border-radius:20px;margin:14px 0;overflow:hidden}.weekHead{background:#fff1f5;color:#8f3d5e;padding:14px;font-weight:850}
+.dayCard{border-radius:0;margin:0;border-left:0;border-right:0;border-bottom:0;background:white}.dayTitle{font-weight:850;margin-bottom:7px}.first{color:var(--rose-dark);font-weight:900}
+.log{max-height:220px;overflow:auto;color:#555}.note{color:#777;font-size:13px;line-height:1.5}.restBadge{display:inline-block;background:#ffe4e4;color:#873333;border-radius:999px;padding:5px 9px;margin:3px;font-size:13px}
+@media (min-width:820px){.layout{grid-template-columns:370px 1fr;align-items:start}.sideCalendar{display:block!important}.mobileCalendar{display:none}.bigName{font-size:76px}.day{padding:13px 0;font-size:16px}.dow{font-size:15px}.panel.mainPanel{min-height:650px}}
+@media (max-width:819px){body{padding:10px}.app{max-width:470px;border-radius:26px}.sideCalendar{display:none}.layout{padding:14px}.bigName{font-size:56px}}
 </style>
 </head>
 <body>
+<div class="app">
+<header>
+  <div class="brand">Rose Garden<br>正式排班系统</div>
+  <button class="menuBtn" onclick="toggleMenu()">☰</button>
+</header>
 
-<div class="card">
-  <h1>Rose Garden 分客轮回 Pro</h1>
-  <p>下一位员工：</p>
-  <div id="nextName"></div>
-
-  <button class="bigbtn main" onclick="assignNext()">已分给这位，下一位</button>
-  <button class="bigbtn skip" onclick="skipNext()">这位休息/忙，跳过</button>
-  <button class="bigbtn undo" onclick="undoLast()">撤销上一步</button>
-  <button class="bigbtn boss" onclick="bossHelp()">Sunny / Charlotte 补位</button>
-  <button class="bigbtn reset" onclick="resetRotation()">重置为当前顺序第一个</button>
-
-  <div class="small">
-    指定客人不算轮回。Sunny / Charlotte 补位不影响员工轮回。点错了可以撤销上一步。
-  </div>
-
-  <div class="log">
-    <strong>今日记录：</strong>
-    <div id="history"></div>
-  </div>
+<div id="drawer" class="drawer">
+  <button onclick="showPage('calendarPage')">📅 日历 / 当天操作</button>
+  <button onclick="showPage('schedulePage')">🔁 自动公平排班表</button>
+  <button onclick="showPage('staffPage')">👥 员工名单</button>
+  <button onclick="showPage('settingsPage')">⚙️ 设置</button>
 </div>
 
-<div class="card">
-  <h2>编辑员工顺序</h2>
-  <div id="staffList"></div>
+<div class="layout">
+  <section class="panel sideCalendar">
+    <h1>日历</h1>
+    <p class="hint">点日期后，右边显示这一天的轮回周数、星期、员工顺序。</p>
+    <div class="toprow"><button class="mini" onclick="changeMonth(-1)">‹ 上月</button><strong id="monthSide"></strong><button class="mini" onclick="changeMonth(1)">下月 ›</button></div>
+    <div class="calendar" id="calendarSide"></div>
+  </section>
 
-  <div class="add-row">
-    <input id="newStaffName" placeholder="输入新员工名字" />
-    <button class="mini main" onclick="addStaff()">添加</button>
-  </div>
+  <main class="panel mainPanel">
+    <section id="calendarPage" class="page active">
+      <div class="mobileCalendar">
+        <h1>日历 / 当天操作</h1>
+        <p class="hint">点日期，系统会自动套用公平排班顺序。</p>
+        <div class="toprow"><button class="mini" onclick="changeMonth(-1)">‹ 上月</button><strong id="monthMain"></strong><button class="mini" onclick="changeMonth(1)">下月 ›</button></div>
+        <div class="calendar" id="calendarMain"></div>
+      </div>
 
-  <button class="bigbtn reset" onclick="clearAll()">清空记录并重置</button>
+      <div class="datebar" id="selectedDateText"></div>
+      <div class="summary" id="cycleInfo"></div>
+      <div class="bigName" id="firstName">-</div>
+      <div class="orderBox" id="selectedOrder"></div>
 
-  <div class="small">
-    可以删除离职员工，也可以用 ↑ ↓ 调整顺序。调整后建议点“重置为当前顺序第一个”。
-  </div>
+      <div class="orderBox">
+        <b>当天休息设置：</b>
+        <div id="restButtons"></div>
+        <div id="restList"></div>
+      </div>
+
+      <button class="btn primary" onclick="assignCurrent()">已分给这位，下一位</button>
+      <button class="btn gray" onclick="skipCurrent()">这位休息/忙，跳过</button>
+      <button class="btn danger" onclick="undoAction()">撤回上一步</button>
+      <button class="btn pink" onclick="backupAction()">Sunny / Charlotte 补位</button>
+      <button class="btn yellow" onclick="resetSelectedDay()">恢复这天原始公平顺序</button>
+
+      <div class="orderBox log"><b>当天记录：</b><div id="dayLog"></div></div>
+    </section>
+
+    <section id="schedulePage" class="page">
+      <h1>自动公平排班表</h1>
+      <p class="hint">可设置从几号开始轮回。员工数量变化后会自动重算。</p>
+      <label>从几号开始第1周轮回</label>
+      <input type="date" id="scheduleStartDate" onchange="saveStartDateFromSchedule()" />
+      <div class="summary" id="fairSummary"></div>
+      <div id="scheduleTable"></div>
+    </section>
+
+    <section id="staffPage" class="page">
+      <h1>员工名单</h1>
+      <p class="hint">添加、删除、上下移动员工。员工数量变化后，系统自动重新生成公平轮回。</p>
+      <div id="staffList"></div>
+      <input id="newStaff" placeholder="输入员工名字，比如 Sunny" />
+      <button class="btn primary" onclick="addStaff()">添加员工</button>
+      <button class="btn gray" onclick="resetDemo()">恢复 John / Annie / Mia</button>
+      <p class="note">建议：只有真正参与轮回的人放这里。Sunny / Charlotte 如果只是补位，可以不用放入员工名单。</p>
+    </section>
+
+    <section id="settingsPage" class="page">
+      <h1>设置</h1>
+      <p class="hint">这里也可以设置轮回开始日期。</p>
+      <label>轮回开始日期</label>
+      <input type="date" id="startDateInput" onchange="saveStartDateFromSettings()" />
+      <button class="btn primary" onclick="clearManualChanges()">清除所有手动调整，重新按公平表</button>
+      <button class="btn danger" onclick="clearAllData()">清空所有数据</button>
+      <div class="orderBox"><b>重要说明：</b><br>这个网页的数据保存在当前设备的浏览器里。手机和 iPad 不会自动同步。正式店里使用时，建议固定用同一台 iPad 或同一台前台电脑。</div>
+    </section>
+  </main>
 </div>
-
-<div class="card">
-  <h2>三周公平轮换表</h2>
-  <div class="small">
-    根据当前员工顺序自动生成。3个人时，三周共21天，每人当第一7次。
-  </div>
-  <div id="threeWeekTable"></div>
 </div>
 
 <script>
-  const defaultStaff = ["John", "Annie", "Mia"];
-  const weekdays = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+const CN_DAYS=["周日","周一","周二","周三","周四","周五","周六"];
+let staff=JSON.parse(localStorage.getItem("rg_staff_final")||'["John","Annie","Mia"]');
+let startDateStr=localStorage.getItem("rg_start_final") || new Date().toISOString().slice(0,10);
+let selectedDate=new Date();
+let viewDate=new Date();
 
-  let staff = JSON.parse(localStorage.getItem("staffList") || "null") || defaultStaff;
-  let index = localStorage.getItem("rotationIndex");
-  index = index === null ? 0 : parseInt(index);
-  if (isNaN(index) || index < 0 || index >= staff.length) index = 0;
-
-  let history = JSON.parse(localStorage.getItem("rotationHistory") || "[]");
-  let undoStack = JSON.parse(localStorage.getItem("undoStack") || "[]");
-
-  function snapshot() {
-    undoStack.push({
-      staff: [...staff],
-      index: index,
-      history: [...history]
-    });
-    if (undoStack.length > 20) undoStack.shift();
+function saveStaff(){localStorage.setItem("rg_staff_final",JSON.stringify(staff));}
+function key(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate()).toISOString().slice(0,10);}
+function fmt(d){return d.toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"});}
+function startDate(){return new Date(startDateStr+"T00:00:00");}
+function daysBetween(a,b){const A=new Date(a.getFullYear(),a.getMonth(),a.getDate());const B=new Date(b.getFullYear(),b.getMonth(),b.getDate());return Math.floor((B-A)/86400000);}
+function stamp(){const now=new Date();return now.toLocaleDateString("zh-CN",{year:"numeric",month:"numeric",day:"numeric"})+" "+now.toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"});}
+function toggleMenu(){const d=document.getElementById("drawer");d.style.display=d.style.display==="block"?"none":"block";}
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.getElementById("drawer").style.display="none";
+  renderAll();
+}
+function getRest(d){return JSON.parse(localStorage.getItem("rg_rest_"+key(d))||"[]").filter(x=>staff.includes(x));}
+function setRest(d,list){localStorage.setItem("rg_rest_"+key(d),JSON.stringify(list));}
+function getBasePlan(d){
+  const activeStaff=staff.filter(s=>!getRest(d).includes(s));
+  const n=staff.length;
+  if(!n)return {week:0,day:0,order:[],first:"-",cycleWeeks:0,rest:getRest(d)};
+  const diff=daysBetween(startDate(),d);
+  const cycleDays=n*7;
+  const mod=((diff%cycleDays)+cycleDays)%cycleDays;
+  const week=Math.floor(mod/7);
+  const day=mod%7;
+  const firstIndex=(week+day)%n;
+  let order=[];
+  for(let i=0;i<n;i++) order.push(staff[(firstIndex+i)%n]);
+  order=order.filter(s=>activeStaff.includes(s));
+  return {week:week+1,day,order,first:order[0]||"-",cycleWeeks:n,rest:getRest(d)};
+}
+function getPlanForDate(d){
+  const base=getBasePlan(d);
+  const override=JSON.parse(localStorage.getItem("rg_override_"+key(d))||"null");
+  if(override && override.order){
+    let order=override.order.filter(x=>staff.includes(x) && !base.rest.includes(x));
+    base.order.forEach(x=>{if(!order.includes(x))order.push(x);});
+    base.order=order;
+    base.first=order[0]||"-";
   }
-
-  function save() {
-    localStorage.setItem("staffList", JSON.stringify(staff));
-    localStorage.setItem("rotationIndex", index);
-    localStorage.setItem("rotationHistory", JSON.stringify(history.slice(-20)));
-    localStorage.setItem("undoStack", JSON.stringify(undoStack));
+  return base;
+}
+function getHistory(d){return JSON.parse(localStorage.getItem("rg_history_"+key(d))||"[]");}
+function setHistory(d,h){localStorage.setItem("rg_history_"+key(d),JSON.stringify(h));}
+function getLog(d){return JSON.parse(localStorage.getItem("rg_log_"+key(d))||"[]");}
+function setLog(d,l){localStorage.setItem("rg_log_"+key(d),JSON.stringify(l));}
+function addLog(d,msg){const l=getLog(d);l.push(`${stamp()} ${msg}`);setLog(d,l);}
+function setOverride(d,order){localStorage.setItem("rg_override_"+key(d),JSON.stringify({order}));}
+function clearOverride(d){localStorage.removeItem("rg_override_"+key(d));}
+function pushHistory(d){
+  const h=getHistory(d);
+  h.push({
+    override:localStorage.getItem("rg_override_"+key(d)),
+    log:localStorage.getItem("rg_log_"+key(d)),
+    rest:localStorage.getItem("rg_rest_"+key(d))
+  });
+  setHistory(d,h);
+}
+function makeCalendar(gridId,titleId){
+  document.getElementById(titleId).textContent=viewDate.toLocaleDateString("zh-CN",{year:"numeric",month:"long"});
+  const grid=document.getElementById(gridId);grid.innerHTML="";
+  ["日","一","二","三","四","五","六"].forEach(x=>{const e=document.createElement("div");e.className="dow";e.textContent=x;grid.appendChild(e);});
+  const y=viewDate.getFullYear(),m=viewDate.getMonth();const first=new Date(y,m,1).getDay();const days=new Date(y,m+1,0).getDate();
+  for(let i=0;i<first;i++)grid.appendChild(document.createElement("div"));
+  const todayKey=key(new Date());
+  for(let dd=1;dd<=days;dd++){
+    const dt=new Date(y,m,dd);const cell=document.createElement("div");cell.className="day";
+    if(key(dt)===key(selectedDate))cell.classList.add("selected"); if(key(dt)===todayKey)cell.classList.add("today");
+    cell.textContent=dd; cell.onclick=()=>{selectedDate=dt;renderAll();showPage("calendarPage");}; grid.appendChild(cell);
   }
-
-  function timeNow() {
-    const d = new Date();
-    return d.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
-  }
-
-  function rotateOrder(startIndex) {
-    if (staff.length === 0) return [];
-    let arr = [];
-    for (let i = 0; i < staff.length; i++) {
-      arr.push(staff[(startIndex + i) % staff.length]);
+}
+function renderCalendar(){makeCalendar("calendarMain","monthMain");makeCalendar("calendarSide","monthSide");}
+function changeMonth(n){viewDate.setMonth(viewDate.getMonth()+n);renderAll();}
+function renderRest(){
+  const rest=getRest(selectedDate);
+  const box=document.getElementById("restButtons"); box.innerHTML="";
+  staff.forEach(name=>{
+    const btn=document.createElement("button");
+    btn.className=rest.includes(name)?"mini danger":"mini";
+    btn.textContent=rest.includes(name)?`${name} 取消休息`:`${name} 设为休息`;
+    btn.onclick=()=>toggleRest(name);
+    box.appendChild(btn);
+  });
+  document.getElementById("restList").innerHTML=rest.length ? "休息员工："+rest.map(x=>`<span class="restBadge">${x}</span>`).join(" ") : "今天暂无休息员工";
+}
+function renderSelected(){
+  const p=getPlanForDate(selectedDate);
+  document.getElementById("selectedDateText").textContent="当前日期："+fmt(selectedDate);
+  document.getElementById("cycleInfo").textContent=staff.length
+    ? `${staff.length}位员工公平轮回｜第 ${p.week} 周｜${CN_DAYS[p.day]}｜休息员工会自动排除`
+    : "请先添加员工";
+  document.getElementById("firstName").textContent=p.first;
+  document.getElementById("selectedOrder").innerHTML=p.order.length
+    ? "<b>当前员工顺序：</b><br>"+p.order.map((x,i)=>`${i+1}. ${x}${i===0?"（第一位）":""}`).join("<br>")
+    : "这天没有可用员工";
+  const logs=getLog(selectedDate);
+  document.getElementById("dayLog").innerHTML=logs.length ? logs.slice().reverse().join("<br>") : "暂无记录";
+  renderRest();
+}
+function toggleRest(name){
+  pushHistory(selectedDate);
+  let rest=getRest(selectedDate);
+  if(rest.includes(name)){rest=rest.filter(x=>x!==name);addLog(selectedDate,`取消休息：${name}`);}
+  else{rest.push(name);addLog(selectedDate,`设为休息：${name}`);}
+  setRest(selectedDate,rest);
+  clearOverride(selectedDate);
+  renderSelected();
+  if(document.getElementById("schedulePage").classList.contains("active"))renderSchedule();
+}
+function assignCurrent(){const p=getPlanForDate(selectedDate);if(!p.order.length)return;pushHistory(selectedDate);const name=p.order.shift();p.order.push(name);setOverride(selectedDate,p.order);addLog(selectedDate,"已分给："+name);renderSelected();}
+function skipCurrent(){const p=getPlanForDate(selectedDate);if(!p.order.length)return;pushHistory(selectedDate);const name=p.order.shift();p.order.push(name);setOverride(selectedDate,p.order);addLog(selectedDate,"跳过："+name);renderSelected();}
+function backupAction(){pushHistory(selectedDate);addLog(selectedDate,"Sunny / Charlotte 补位，不影响正常轮回");renderSelected();}
+function undoAction(){
+  const h=getHistory(selectedDate); if(!h.length){alert("没有可以撤回的步骤。");return;}
+  const last=h.pop(); setHistory(selectedDate,h);
+  if(last.override===null)clearOverride(selectedDate);else localStorage.setItem("rg_override_"+key(selectedDate),last.override);
+  if(last.log===null)localStorage.removeItem("rg_log_"+key(selectedDate));else localStorage.setItem("rg_log_"+key(selectedDate),last.log);
+  if(last.rest===null)localStorage.removeItem("rg_rest_"+key(selectedDate));else localStorage.setItem("rg_rest_"+key(selectedDate),last.rest);
+  const logs=getLog(selectedDate); logs.push(`${stamp()} 撤回上一步`); setLog(selectedDate,logs);
+  renderSelected();
+}
+function resetSelectedDay(){pushHistory(selectedDate);clearOverride(selectedDate);localStorage.removeItem("rg_rest_"+key(selectedDate));addLog(selectedDate,"已恢复这天原始公平顺序，并清除当天休息设置");renderSelected();}
+function renderSchedule(){
+  const startInput=document.getElementById("scheduleStartDate"); if(startInput)startInput.value=startDateStr;
+  const n=staff.length;
+  document.getElementById("fairSummary").textContent=n?`${n}位员工 → 自动生成 ${n} 周轮回；一轮共 ${n*7} 天；休息日期会在当天顺序中自动排除。`:"请先添加员工";
+  const box=document.getElementById("scheduleTable"); box.innerHTML=""; if(!n)return;
+  const counts={};staff.forEach(s=>counts[s]=0);
+  for(let w=0;w<n;w++){
+    const weekCard=document.createElement("div"); weekCard.className="weekCard"; weekCard.innerHTML=`<div class="weekHead">第 ${w+1} 周轮回</div>`;
+    for(let d=0;d<7;d++){
+      const dt=new Date(startDate()); dt.setDate(dt.getDate()+w*7+d);
+      const base=getBasePlan(dt); if(base.first!=="-") counts[base.first]=(counts[base.first]||0)+1;
+      const rest=base.rest.length?`<br><span class="restBadge">休息：${base.rest.join("、")}</span>`:"";
+      const row=document.createElement("div"); row.className="dayCard";
+      row.innerHTML=`<div class="dayTitle">${fmt(dt)} ｜第 ${base.week} 周｜${CN_DAYS[base.day]}</div>
+        <div><span class="first">第一位：${base.first}</span></div>
+        <div>顺序：${base.order.length?base.order.join(" → "):"无可用员工"}${rest}</div>`;
+      weekCard.appendChild(row);
     }
-    return arr;
+    box.appendChild(weekCard);
   }
-
-  function showNext() {
-    if (staff.length === 0) {
-      document.getElementById("nextName").textContent = "请添加员工";
-    } else {
-      if (index >= staff.length) index = 0;
-      document.getElementById("nextName").textContent = staff[index];
-    }
-
-    document.getElementById("history").innerHTML =
-      history.length ? history.slice(-12).reverse().join("<br>") : "暂无记录";
-
-    renderStaffList();
-    renderThreeWeekTable();
-    save();
-  }
-
-  function assignNext() {
-    if (staff.length === 0) return alert("请先添加员工");
-    snapshot();
-    const name = staff[index];
-    history.push(timeNow() + " 分给：" + name);
-    index = (index + 1) % staff.length;
-    showNext();
-  }
-
-  function skipNext() {
-    if (staff.length === 0) return alert("请先添加员工");
-    snapshot();
-    const name = staff[index];
-    history.push(timeNow() + " 跳过：" + name);
-    index = (index + 1) % staff.length;
-    showNext();
-  }
-
-  function bossHelp() {
-    snapshot();
-    history.push(timeNow() + " Sunny / Charlotte 补位（不影响轮回）");
-    showNext();
-  }
-
-  function undoLast() {
-    if (undoStack.length === 0) return alert("没有可以撤销的操作");
-    const last = undoStack.pop();
-    staff = last.staff;
-    index = last.index;
-    history = last.history;
-    history.push(timeNow() + " 已撤销上一步");
-    showNext();
-  }
-
-  function resetRotation() {
-    if (staff.length === 0) return alert("请先添加员工");
-    if (confirm("确定重置为当前顺序第一个吗？")) {
-      snapshot();
-      index = 0;
-      history.push(timeNow() + " 已重置为：" + staff[0]);
-      showNext();
-    }
-  }
-
-  function renderStaffList() {
-    const box = document.getElementById("staffList");
-    box.innerHTML = "";
-    staff.forEach((name, i) => {
-      const row = document.createElement("div");
-      row.className = "staff-row";
-      row.innerHTML = `
-        <div class="staff-name">${i + 1}. ${name}</div>
-        <button class="mini" onclick="moveUp(${i})">↑</button>
-        <button class="mini" onclick="moveDown(${i})">↓</button>
-        <button class="mini danger" onclick="removeStaff(${i})">删除</button>
-      `;
-      box.appendChild(row);
-    });
-  }
-
-  function addStaff() {
-    const input = document.getElementById("newStaffName");
-    const name = input.value.trim();
-    if (!name) return alert("请输入员工名字");
-    if (staff.includes(name)) return alert("这个员工已经在名单里");
-    snapshot();
-    staff.push(name);
-    input.value = "";
-    history.push(timeNow() + " 添加员工：" + name);
-    showNext();
-  }
-
-  function removeStaff(i) {
-    const name = staff[i];
-    if (!confirm("确定删除 " + name + " 吗？")) return;
-    snapshot();
-    staff.splice(i, 1);
-    if (index >= staff.length) index = 0;
-    history.push(timeNow() + " 删除员工：" + name);
-    showNext();
-  }
-
-  function moveUp(i) {
-    if (i === 0) return;
-    snapshot();
-    [staff[i - 1], staff[i]] = [staff[i], staff[i - 1]];
-    if (index === i) index = i - 1;
-    else if (index === i - 1) index = i;
-    history.push(timeNow() + " 调整顺序：上移 " + staff[i - 1]);
-    showNext();
-  }
-
-  function moveDown(i) {
-    if (i === staff.length - 1) return;
-    snapshot();
-    [staff[i], staff[i + 1]] = [staff[i + 1], staff[i]];
-    if (index === i) index = i + 1;
-    else if (index === i + 1) index = i;
-    history.push(timeNow() + " 调整顺序：下移 " + staff[i + 1]);
-    showNext();
-  }
-
-  function clearAll() {
-    if (!confirm("确定清空记录并恢复 John / Annie / Mia 吗？")) return;
-    snapshot();
-    staff = [...defaultStaff];
-    index = 0;
-    history = [timeNow() + " 已清空并恢复默认员工"];
-    showNext();
-  }
-
-  function renderThreeWeekTable() {
-    const box = document.getElementById("threeWeekTable");
-    if (staff.length === 0) {
-      box.innerHTML = "请先添加员工";
-      return;
-    }
-
-    let html = "";
-    let dayNumber = 0;
-
-    for (let week = 1; week <= 3; week++) {
-      html += `<div class="week-title">第${week}周</div>`;
-      html += "<table><tr><th>星期</th><th>轮回顺序</th></tr>";
-
-      for (let d = 0; d < 7; d++) {
-        const start = dayNumber % staff.length;
-        html += `<tr><td>${weekdays[d]}</td><td>${rotateOrder(start).join(" → ")}</td></tr>`;
-        dayNumber++;
-      }
-
-      html += "</table>";
-    }
-
-    box.innerHTML = html;
-  }
-
-  showNext();
+  const check=document.createElement("div"); check.className="summary";
+  check.innerHTML="第一位次数检查（不含休息被排除的日期）：<br>"+Object.entries(counts).map(([k,v])=>`${k}：${v}次`).join("　");
+  box.prepend(check);
+}
+function renderStaff(){
+  const box=document.getElementById("staffList"); box.innerHTML="";
+  staff.forEach((name,i)=>{
+    const row=document.createElement("div"); row.className="staffRow";
+    row.innerHTML=`<b>${i+1}. ${name}</b><div><button class="mini" onclick="moveStaff(${i},-1)">↑</button><button class="mini" onclick="moveStaff(${i},1)">↓</button><button class="mini" onclick="removeStaff(${i})">删除</button></div>`;
+    box.appendChild(row);
+  });
+}
+function addStaff(){const input=document.getElementById("newStaff");const name=input.value.trim();if(!name)return;if(!staff.includes(name))staff.push(name);input.value="";saveStaff();clearManualChanges(false);renderStaff();renderAll();}
+function removeStaff(i){if(!confirm("确定删除这个员工吗？删除后公平表会自动重算。"))return;staff.splice(i,1);saveStaff();clearManualChanges(false);renderStaff();renderAll();}
+function moveStaff(i,dir){const j=i+dir;if(j<0||j>=staff.length)return;[staff[i],staff[j]]=[staff[j],staff[i]];saveStaff();clearManualChanges(false);renderStaff();renderAll();}
+function resetDemo(){if(!confirm("恢复示例会替换当前员工名单，确定吗？"))return;staff=["John","Annie","Mia"];saveStaff();clearManualChanges(false);renderStaff();renderAll();}
+function renderSettings(){const x=document.getElementById("startDateInput");if(x)x.value=startDateStr;}
+function saveStartDateFromSettings(){startDateStr=document.getElementById("startDateInput").value;localStorage.setItem("rg_start_final",startDateStr);clearManualChanges(false);renderAll();alert("轮回开始日期已保存，公平表已重新计算。");}
+function saveStartDateFromSchedule(){startDateStr=document.getElementById("scheduleStartDate").value;localStorage.setItem("rg_start_final",startDateStr);clearManualChanges(false);renderAll();alert("轮回开始日期已保存，公平表已重新计算。");}
+function clearManualChanges(showAlert=true){
+  Object.keys(localStorage).forEach(k=>{if(k.startsWith("rg_override_")||k.startsWith("rg_history_")||k.startsWith("rg_log_")||k.startsWith("rg_rest_"))localStorage.removeItem(k);});
+  if(showAlert)alert("已清除手动调整、休息设置和记录，恢复自动公平表。");
+  renderAll();
+}
+function clearAllData(){if(!confirm("确定清空所有数据吗？员工名单、记录、设置都会清空。"))return;Object.keys(localStorage).forEach(k=>{if(k.startsWith("rg_"))localStorage.removeItem(k);});staff=["John","Annie","Mia"];startDateStr=new Date().toISOString().slice(0,10);selectedDate=new Date();viewDate=new Date();renderAll();alert("已清空并恢复默认示例。");}
+function renderAll(){renderCalendar();renderSelected();if(document.getElementById("schedulePage").classList.contains("active"))renderSchedule();if(document.getElementById("staffPage").classList.contains("active"))renderStaff();if(document.getElementById("settingsPage").classList.contains("active"))renderSettings();}
+renderAll();
 </script>
-
 </body>
 </html>
